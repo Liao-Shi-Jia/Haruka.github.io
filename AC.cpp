@@ -1,78 +1,54 @@
-#include <cstdio>
+#include<cstdio>
 
+#define IL inline
 
+typedef long long ll;
 
-#define int long long
-#define ll long long
-template <typename T>
-T Max(T x, T y)
+const int Geli = 146097;
+const int Rulian = 1461;
+
+int T;
+int year[Geli], month[Geli], day[Geli];
+ll n, t;
+IL int check(int y, int m)
 {
-    return x > y ? x : y;
-}
-
-const int INF = (2e5 + 5e4 + 10);
-const int Inf = 1e18;
-
-int n, k;
-int h = 1, t = 0;
-ll ans = 0;
-ll q[INF];
-ll a[INF];
-ll pre[INF];
-ll f[INF];
-
-
-ll get_pre(int l, int r)
-{
-    if (l <= r) {
-        return pre[r] - pre[l - 1];
-    } else {
-        return 0;
+    if (m == 2) {
+        return y % 4 ? 28 : y % 100 ? 29 : y % 400 ? 28 : 29;
     }
+    return m == 4 || m == 6 || m == 9 || m == 11 ? 30 : 31;
 }
-
-int get_val(int j)
+int main()
 {
-    return a[j + 1] + f[j];
-}
-
-void add(int j)
-{
-    while (h <= t && get_val(q[t]) + get_pre(q[t] + 2, j + 1) <= get_val(j)) {
-        t --;
-    }
-    q[++ t] = j;
-}
-
-signed main ()
-{
-    scanf ("%lld%lld", &n, &k);
-    for (int i = 1; i <= n; i++) {
-        scanf ("%lld", &a[i]);
-        pre[i] = pre[i - 1];
-        if (a[i] > 0) {
-            pre[i] += a[i];
+    month[0] = day[0] = 1;
+    for (int i = 1; i < Geli; i ++) {
+        day[i] = day[i - 1] + 1;
+        month[i] = month[i - 1];
+        year[i] = year[i - 1];
+        if (day[i] > check(year[i], month[i])) {
+            month[i] ++;
+            day[i] = 1;
+        }
+        if (month[i] > 12) {
+            year[i] ++;
+            month[i] = 1;
         }
     }
-    for (int i = 1; i <= n; i++) {
-
-        f[i] = -Inf;
-        if (i <= k) {
-            f[i] = Max(f[i], a[i] + get_pre (1, i - 1));
+    scanf("%d", &T);
+    while(T --) {
+        scanf("%lld", &n);
+        if (n > 2299160) {
+            n -= 2159351;
+            t = n / Geli * 400 + 1200;
+            n %= Geli;
+        } else {
+            t = n / Rulian * 4 - 4712;
+            n %= Rulian;
         }
-        f[i] = Max(f[i], a[i] + f[i - 1]);
-
-        while (h <= t && i - k > q[h]) {
-            h ++;
+        if (t + year[n] > 0) {
+            printf("%d %d %lld\n", day[n], month[n], t + year[n]);
+        } else {
+            printf("%d %d %lld BC\n", day[n], month[n], 1 - t - year[n]);
         }
-        if (h < t) {
-            f[i] = Max(f[i], a[i] + a[q[h] + 1] + f[q[h]] + get_pre(q[h] + 2, i - 1));
-        }
-        add (i - 1);
-
-        ans = Max(ans, f[i]);
     }
-
-    printf ("%lld", ans);
     return 0;
 }
