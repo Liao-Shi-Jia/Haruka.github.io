@@ -1,54 +1,47 @@
-#include<cstdio>
+#include <cstdio>
+#include <cctype>
 
 #define IL inline
 
-typedef long long ll;
+typedef unsigned long long ull;
 
-const int Geli = 146097;
-const int Rulian = 1461;
+ull n, m, c, k;
+ull ans, p, q, num;
 
-int T;
-int year[Geli], month[Geli], day[Geli];
-ll n, t;
-IL int check(int y, int m)
+IL ull read()
 {
-    if (m == 2) {
-        return y % 4 ? 28 : y % 100 ? 29 : y % 400 ? 28 : 29;
+    ull s = 0;
+    char ch = getchar();
+    while (!isdigit(ch)) {
+        ch = getchar();
     }
-    return m == 4 || m == 6 || m == 9 || m == 11 ? 30 : 31;
+    while (isdigit(ch)) {
+        s = (s << 3) + (s << 1) + ch - '0';
+        ch = getchar();
+    }
+    return s;
 }
+
 int main()
 {
-    month[0] = day[0] = 1;
-    for (int i = 1; i < Geli; i ++) {
-        day[i] = day[i - 1] + 1;
-        month[i] = month[i - 1];
-        year[i] = year[i - 1];
-        if (day[i] > check(year[i], month[i])) {
-            month[i] ++;
-            day[i] = 1;
-        }
-        if (month[i] > 12) {
-            year[i] ++;
-            month[i] = 1;
-        }
+    n = read();
+    m = read();
+    c = read();
+    k = read();
+    for (int i = 1; i <= n; i ++) {
+        num |= read();
     }
-    scanf("%d", &T);
-    while(T --) {
-        scanf("%lld", &n);
-        if (n > 2299160) {
-            n -= 2159351;
-            t = n / Geli * 400 + 1200;
-            n %= Geli;
-        } else {
-            t = n / Rulian * 4 - 4712;
-            n %= Rulian;
-        }
-        if (t + year[n] > 0) {
-            printf("%d %d %lld\n", day[n], month[n], t + year[n]);
-        } else {
-            printf("%d %d %lld BC\n", day[n], month[n], 1 - t - year[n]);
-        }
+    for (int i = 1; i <= m; i ++) {
+        p |= 1ull << read();
+        q = read(); // 屁用没有
+    }
+    for (int i = 0; i < k; i ++) {
+        ans += !((p >> i) & 1) || ((num >> i) & 1);
+    }
+    if (ans == 64 && !n) {
+        puts("18446744073709551616");
+    } else {
+        printf("%llu\n", ans == 64 ? -n : (1ull << ans) - n);
     }
     return 0;
 }
